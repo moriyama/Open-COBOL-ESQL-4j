@@ -234,7 +234,7 @@ object Common {
     val errMsgInfo = result match {
       case Left(e) => Option(e.getMessage) match {
         case Some(msg) => {
-          val bytes = msg.getBytes
+          val bytes = msg.getBytes("SHIFT-JIS")
           Some((bytes, bytes.length))
         }
         case _ => None
@@ -246,10 +246,10 @@ object Common {
       // Output Log
       _ <- errMsgInfo match {
         case Some((msg, _)) => for {
-          _ <- logLn(s"MESSAGE:${msg}")
+          _ <- logLn(String.format("MESSAGE:%s", new String(msg, "SHIFT-JIS")))
           _ <- errorLogLn(String.format(
             "%d:%5s:%-70s",
-            sqlCode, sqlState, msg))
+            sqlCode, sqlState, new String(msg, "SHIFT-JIS")))
         } yield ()
         case _ => operationPure()
       }
